@@ -60,7 +60,8 @@ public class GameObject {
 
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef();
-        def.type = BodyDef.BodyType.DynamicBody;
+        def.type = BodyDef.BodyType.StaticBody;
+
         def.fixedRotation = true;
         Body body = world.createBody(def);
 
@@ -70,8 +71,9 @@ public class GameObject {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.density = 0.1f;
-        fixtureDef.friction = 1f;
+
         fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.friction = 0.0f;
 
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
@@ -80,5 +82,7 @@ public class GameObject {
         body.setTransform(x * SCALE, y * SCALE, 0);
         return body;
     }
+
+
 
 }

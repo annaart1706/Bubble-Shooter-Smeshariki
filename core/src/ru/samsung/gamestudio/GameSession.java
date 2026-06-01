@@ -1,4 +1,5 @@
 package ru.samsung.gamestudio;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
 import ru.samsung.gamestudio.managers.MemoryManager;
 
@@ -74,5 +75,11 @@ public class GameSession {
 
     private float getTrashPeriodCoolDown() {
         return (float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
+    }
+    void createGameBounds(World world){
+
+    }
+    public void addScore(int value){
+        score+=value;
     }
 }
