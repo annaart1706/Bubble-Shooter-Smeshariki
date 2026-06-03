@@ -37,12 +37,13 @@ public class MemoryManager {
     }
 
     public static ArrayList<Integer> loadRecordsTable() {
-        if (!preferences.contains("recordTable"))
-            return null;
+        if (!preferences.contains("recordTable")) {
+            return new ArrayList<>();
+        }
 
         String scores = preferences.getString("recordTable");
         Json json = new Json();
-        ArrayList<Integer> table = json.fromJson(ArrayList.class, scores);
+        ArrayList<Integer> table = json.fromJson(ArrayList.class, Integer.class, scores);
         return table;
     }
 

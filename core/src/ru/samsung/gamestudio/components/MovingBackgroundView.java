@@ -11,7 +11,7 @@ public class MovingBackgroundView extends View {
 
     int texture1Y;
     int texture2Y;
-    int speed = 2;
+    int speed = 0;
 
     public MovingBackgroundView(String pathToTexture) {
         super(0, 0);

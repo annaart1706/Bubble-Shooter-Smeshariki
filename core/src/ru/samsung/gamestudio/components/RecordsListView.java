@@ -9,20 +9,41 @@ import java.util.ArrayList;
 
 public class RecordsListView extends TextView {
 
+    private ArrayList<String> recordsLines = new ArrayList<>();
+    private float startY;
+
     public RecordsListView(BitmapFont font, float y) {
         super(font, 0, y, "");
+        this.startY = y;
     }
 
     public void setRecords(ArrayList<Integer> recordsList) {
-        text = "";
-        int countOfRows = Math.min(recordsList.size(), 5);
-        for (int i = 0; i < countOfRows; i++) {
-            System.out.println(recordsList.get(i));
-            text += (i + 1) + ". - " + recordsList.get(i) + "\n";
+        recordsLines.clear();
+
+        if (recordsList == null || recordsList.isEmpty()) {
+            recordsLines.add("No records yet!");
+            return;
         }
 
-        GlyphLayout glyphLayout = new GlyphLayout(font, text);
-        x = (GameSettings.SCREEN_WIDTH - glyphLayout.width) / 2;
+        int countOfRows = Math.min(recordsList.size(), 5);
+        for (int i = 0; i < countOfRows; i++) {
+            String rowText = (i + 1) + ". - " + recordsList.get(i);
+            recordsLines.add(rowText);
+        }
     }
 
+    // ИСПРАВЛЕНО: Изменили имя на drawRecords и убрали @Override,
+    // чтобы полностью исключить конфликты со старым TextView из шутера!
+    public void drawRecords(SpriteBatch batch) {
+        float currentY = startY;
+
+        for (String line : recordsLines) {
+            GlyphLayout layout = new GlyphLayout(font, line);
+            float currentX = (GameSettings.SCREEN_WIDTH - layout.width) / 2;
+
+            // Рисуем чистым шрифтом прямо в открытый батч из GameScreen
+            font.draw(batch, line, currentX, currentY);
+            currentY -= 45f;
+        }
+    }
 }

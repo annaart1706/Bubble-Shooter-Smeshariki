@@ -31,6 +31,7 @@ private int row = -1, col  = -1;
                 world
         );
 
+        this.livesLeft = 1; // Теперь каждый Смешарик официально "жив" при создании
         this.colorType = colorType;
         body.setGravityScale(0);
 

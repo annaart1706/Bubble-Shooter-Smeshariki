@@ -56,16 +56,23 @@ public class ContactManager {
                     Smesharik ballA = (Smesharik) fixA.getUserData();
                     Smesharik ballB = (Smesharik) fixB.getUserData();
 
-                    // Ситуация 1: Шар А летит, а Шар Б уже жестко зафиксирован в сетке
+                    // Ситуация 1: Шар А летит, а Шар Б уже зафиксирован
                     if (ballA.getCurrentState() == Smesharik.State.FLYING && ballB.getCurrentState() == Smesharik.State.FIXED) {
-                        ballsToFix.add(ballA); // Замораживать нужно строго летящий шар А!
+                        // ДОБАВЛЯЕМ ПРОВЕРКУ: если мы этот шар уже планируем фиксировать, игнорируем повторный контакт!
+                        if (!ballsToFix.contains(ballA)) {
+                            ballsToFix.add(ballA);
+                        }
                     }
 
-                    // Ситуация 2: Наоборот, Шар Б летит, а Шар А уже зафиксирован в сетке
+                    // Ситуация 2: Наоборот, Шар Б летит, а Шар А зафиксирован
                     else if (ballB.getCurrentState() == Smesharik.State.FLYING && ballA.getCurrentState() == Smesharik.State.FIXED) {
-                        ballsToFix.add(ballB); // Замораживать нужно строго летящий шар Б!
+                        // ДОБАВЛЯЕМ ПРОВЕРКУ:
+                        if (!ballsToFix.contains(ballB)) {
+                            ballsToFix.add(ballB);
+                        }
                     }
                 }
+
 
             }
 

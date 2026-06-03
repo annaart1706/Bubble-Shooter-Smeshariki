@@ -37,12 +37,13 @@ public class GameSettings {
 
     public static final String[] BUBBLE_TEXTURES = {
             "Smeshariki/krosh.png",
+            "Smeshariki/nusha.png",
             "Smeshariki/egik.png",
             "Smeshariki/kapatich.png",
             "Smeshariki/barash.png",
             "Smeshariki/karych.png",
             "Smeshariki/losaysh.png",
-            "Smeshariki/nusha.png",
+
             "Smeshariki/pin.png",
             "Smeshariki/sovynya.png"
     };
