@@ -12,6 +12,12 @@ public class FontBuilder {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = size;
         parameter.color = color;
+        // Главное: Передаем строку, содержащую ВСЕ нужные символы (русские + английские + цифры + знаки)
+        parameter.characters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
+                "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "0123456789.,!?:;'\"()-+=/%";
+
         BitmapFont font = generator.generateFont(parameter);
         generator.dispose();
         return font;

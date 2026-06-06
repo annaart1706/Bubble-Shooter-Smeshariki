@@ -30,7 +30,6 @@ public class GameResources {
 
     // Fonts for text
 
-//    public static final String FONT_PATH = "fonts/Montserrat-Bold.ttf";
     public static final String FONT_PATH = "fonts/smeshariki_font.otf";
 
 
