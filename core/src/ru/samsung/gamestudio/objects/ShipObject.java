@@ -11,7 +11,7 @@ import ru.samsung.gamestudio.GameSettings;
 public class ShipObject extends GameObject {
 
     long lastShotTime;
-    int livesLeft;
+    public int livesLeft;
     private float rotation = 0f;
     public ShipObject(int x, int y, int width, int height, String texturePath, World world) {
         super(texturePath, x, y, width, height, GameSettings.SHIP_BIT, world);

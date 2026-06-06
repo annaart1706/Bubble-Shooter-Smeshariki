@@ -14,13 +14,12 @@ public class GameSettings {
     public static final int POSITION_ITERATIONS = 6;
     public static final float SCALE = 0.03f;
 
-    public static long STARTING_TRASH_APPEARANCE_COOL_DOWN = 2000; // in [ms] - milliseconds
+    public static long STARTING_TRASH_APPEARANCE_COOL_DOWN = 7000; // in [ms] - milliseconds
     public static int BULLET_VELOCITY = 200; // in [m/s] - meter per second
     public static int SHOOTING_COOL_DOWN = 1000; // in [ms] - milliseconds
 
     public static final short TRASH_BIT = 2;
     public static final short SHIP_BIT = 4;
-    public static final short BULLET_BIT = 8;
 
     // Object sizes
 
@@ -45,10 +44,20 @@ public class GameSettings {
             "Smeshariki/losaysh.png",
 
             "Smeshariki/pin.png",
-            "Smeshariki/sovynya.png"
+            "Smeshariki/sovynya.png",
+
+            // НАШ СКРЫТЫЙ БОНУС: Биби под индексом 9!
+            "Smeshariki/bibi.png"       // 9
     };
 
     public static final float CANNON_CANCEL_ZONE = 100f;
     public static final float SHOT_SPEED = 15f;
+
+    // === НАШИ НОВЫЕ НАСТРОЙКИ ДЛЯ МИЛЫХ ОБЛАКОВ-ГРАНИЦЫ ===
+    // Координата Y, ниже которой Смешарикам опускаться нельзя (конец 8-го ряда)
+    public static final int CRITICAL_Y_LINE = 650;
+
+    // Путь к картинке облачной гряды (не забудь положить её в assets/images/)
+    public static final String CLOUD_LINE_IMG_PATH = "textures/cloud_border.png";
 
 }

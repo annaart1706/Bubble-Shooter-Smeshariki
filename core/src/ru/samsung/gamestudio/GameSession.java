@@ -9,11 +9,14 @@ import java.util.ArrayList;
 public class GameSession {
 
     public GameState state;
-    long nextTrashSpawnTime;
+    public long nextTrashSpawnTime;
     long sessionStartTime;
     long pauseStartTime;
     private int score;
     int destructedSmesharikNumber;
+    // Флаг, который сообщит экрану игры, что нужно запустить анимацию падения
+    public boolean isGameOverTriggered = false;
+
 
     public GameSession() {
     }
@@ -39,6 +42,10 @@ public class GameSession {
 
     public void endGame() {
         state = GameState.ENDED;
+
+        // Взводим флаг: игра закончена, пора ронять Смешариков!
+        isGameOverTriggered = true;
+
         ArrayList<Integer> recordsTable = MemoryManager.loadRecordsTable();
         if (recordsTable == null) {
             recordsTable = new ArrayList<>();
@@ -54,8 +61,8 @@ public class GameSession {
         return score;
     }
 
-    private float getTrashPeriodCoolDown() {
-        return (float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
+    public float getTrashPeriodCoolDown() {
+        return (float) Math.exp(-0.0003 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
     }
     public void addScore(int value){
         score+=value;
@@ -63,5 +70,6 @@ public class GameSession {
     public void updateScore() {
 
     }
+
 
 }

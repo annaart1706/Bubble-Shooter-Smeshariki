@@ -36,8 +36,49 @@ public class MyGdxGame extends Game {
 
     float accumulator = 0;
 
+
     @Override
     public void create() {
+//        com.badlogic.gdx.physics.box2d.Box2D.init();
+//        world = new com.badlogic.gdx.physics.box2d.World(new com.badlogic.gdx.math.Vector2(0, 0), true);
+//        batch = new com.badlogic.gdx.graphics.g2d.SpriteBatch();
+//
+//        camera = new com.badlogic.gdx.graphics.OrthographicCamera();
+//        camera.setToOrtho(false, ru.samsung.gamestudio.GameSettings.SCREEN_WIDTH, ru.samsung.gamestudio.GameSettings.SCREEN_HEIGHT);
+//
+//        // =========================================================================
+//        // СИСТЕМА АВТОМАТИЧЕСКОЙ КОНВЕРТАЦИИ ВЕКТОРНОГО ШРИФТА В ИГРОВОЙ 🛡️✨
+//        // =========================================================================
+//        // 1. Указываем путь к твоему файлу .otf / .ttf
+//        com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator generator =
+//                new com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator(Gdx.files.internal("fonts/Montserrat-Bold.otf"));
+//
+//        com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter parameter =
+//                new com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter();
+//
+//        // 2. ЯВНО ПРОПИСЫВАЕМ ВСЕ РУССКИЕ БУКВЫ, которые генератор должен превратить в картинку!
+//        parameter.characters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя!?.,:;()-+*=<>";
+//
+//        // 3. Создаем КРУПНЫЙ шрифт для всплывающих фраз Смешариков (Размер 46 пикселей)
+//        parameter.size = 46;
+//        largeWhiteFont = generator.generateFont(parameter);
+//
+//        // 4. Создаем ОБЫЧНЫЙ шрифт для Очков и Экрана настроек (Размер 28 пикселей)
+//        parameter.size = 28;
+//        commonWhiteFont = generator.generateFont(parameter);
+//
+//        // 5. Обязательно закрываем генератор, чтобы освободить оперативную память устройства
+//        generator.dispose();
+//        // =========================================================================
+//
+//        // Твоя стандартная инициализация остальных экранов...
+//        audioManager = ru.samsung.gamestudio.managers.AudioManager.getInstance();
+//        gameScreen = new ru.samsung.gamestudio.screens.GameScreen(this);
+//        menuScreen = new ru.samsung.gamestudio.screens.MenuScreen(this);
+//        settingsScreen = new ru.samsung.gamestudio.screens.SettingsScreen(this);
+//
+//        setScreen(menuScreen);
+//        audioManager.playMusicForState(1);
 
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
@@ -49,7 +90,7 @@ public class MyGdxGame extends Game {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
-        audioManager = new AudioManager();
+        audioManager = AudioManager.getInstance();
 
         gameScreen = new GameScreen(this);
         menuScreen = new MenuScreen(this);
@@ -57,6 +98,9 @@ public class MyGdxGame extends Game {
 
         setScreen(menuScreen);
     }
+
+
+
 
     @Override
     public void dispose() {

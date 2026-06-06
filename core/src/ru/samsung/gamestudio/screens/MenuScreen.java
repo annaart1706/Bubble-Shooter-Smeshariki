@@ -25,11 +25,22 @@ public class MenuScreen extends ScreenAdapter {
         this.myGdxGame = myGdxGame;
 
         backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH_MENU);
-        titleView = new TextView(myGdxGame.largeWhiteFont, 180, 960, "Bubble Shooter Smeshariki");
+        titleView = new TextView(myGdxGame.largeWhiteFont, 180, 960, "Смешарики");
         startButtonView = new ButtonView(140, 646, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "start");
         settingsButtonView = new ButtonView(140, 551, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "settings");
         exitButtonView = new ButtonView(140, 456, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "exit");
     }
+
+    @Override
+    public void show() {
+        // Как только игрок зашел в Главное меню — включается тема меню (индекс 1)
+        if (myGdxGame != null && myGdxGame.audioManager != null) {
+            myGdxGame.audioManager.playMusicForState(1);
+        }
+    }
+
+
+
 
     @Override
     public void render(float delta) {
@@ -55,15 +66,24 @@ public class MenuScreen extends ScreenAdapter {
         if (Gdx.input.justTouched()) {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
+            // === ВНУТРИ handleInput() В MenuScreen.java ===
             if (startButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                myGdxGame.setScreen(myGdxGame.gameScreen);
-            }
-            if (exitButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                Gdx.app.exit();
+                myGdxGame.setScreen(myGdxGame.gameScreen); // Просто меняем экран, без лишних вызовов!
             }
             if (settingsButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                myGdxGame.setScreen(myGdxGame.settingsScreen);
+                myGdxGame.setScreen(myGdxGame.settingsScreen); // Просто меняем экран
+            }
+
+
+            // КЛИК ПО КНОПКЕ ВЫХОДА
+            if (exitButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                // ИСПРАВЛЕНИЕ: Перед выходом глушим музыку, чтобы она не зависала на секунду в системе
+                if (myGdxGame.audioManager != null) {
+                    myGdxGame.audioManager.stopMusic();
+                }
+                Gdx.app.exit();
             }
         }
     }
+
 }

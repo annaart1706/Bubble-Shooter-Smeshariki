@@ -56,10 +56,33 @@ public class SettingsScreen extends ScreenAdapter {
         );
 
     }
+    // =========================================================================
+    // ДОБАВЛЯЕМ МЕТОД show() ДЛЯ ПЕРЕКЛЮЧЕНИЯ МУЗЫКИ И СБРОСА ТЕКСТА 🛡️🎶
+    // =========================================================================
+    @Override
+    public void show() {
+        // 1. Включаем спокойную музыку для экрана настроек (индекс 3)
+        if (myGdxGame != null && myGdxGame.audioManager != null) {
+            myGdxGame.audioManager.playMusicForState(3); // Спокойная тема Лосяша
+        }
+
+        // 2. Сбрасываем текст очистки рекордов к исходному состоянию при каждом входе
+        if (clearSettingView != null) {
+            clearSettingView.setText("clear records");
+        }
+
+        // 3. На всякий случай обновляем текст звука и музыки, если они менялись в игре
+        if (musicSettingView != null) {
+            musicSettingView.setText("music: " + translateStateToText(MemoryManager.loadIsMusicOn()));
+        }
+        if (soundSettingView != null) {
+            soundSettingView.setText("sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
+        }
+    }
+    // =========================================================================
 
     @Override
     public void render(float delta) {
-
         handleInput();
 
         myGdxGame.camera.update();
@@ -84,6 +107,12 @@ public class SettingsScreen extends ScreenAdapter {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if (returnButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+
+                // ИСПРАВЛЕНИЕ: Возвращаем задорную тему ГЛАВНОГО МЕНЮ (индекс 1) обратно! 🪕✨
+                if (myGdxGame.audioManager != null) {
+                    myGdxGame.audioManager.playMusicForState(1);
+                }
+
                 myGdxGame.setScreen(myGdxGame.menuScreen);
             }
             if (clearSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
@@ -102,6 +131,7 @@ public class SettingsScreen extends ScreenAdapter {
             }
         }
     }
+
 
     private String translateStateToText(boolean state) {
         return state ? "ON" : "OFF";

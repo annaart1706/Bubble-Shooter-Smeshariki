@@ -14,13 +14,18 @@ import javax.swing.plaf.nimbus.State;
 
 public class Smesharik extends GameObject {
     private int livesLeft;
-    public enum State { NEW, FLYING, FIXED, FULLING};
+
+    public enum State {NEW, FLYING, FIXED, FULLING}
+
+    ;
     public State currentState;
-    private final int colorType;
-private int row = -1, col  = -1;
+    private int colorType;
+    private int row = -1, col = -1;
+    // Добавь к переменным класса Smesharik:
+    public boolean hitCeilingDirectly = false;
 
 
-    public Smesharik( String texturePath, int x, int y, int colorType, World world, boolean isProjectile) {
+    public Smesharik(String texturePath, int x, int y, int colorType, World world, boolean isProjectile) {
         super(
                 texturePath,
                 x,
@@ -35,12 +40,11 @@ private int row = -1, col  = -1;
         this.colorType = colorType;
         body.setGravityScale(0);
 
-        if(isProjectile){
+        if (isProjectile) {
             this.currentState = State.NEW;
             this.body.setType(BodyDef.BodyType.DynamicBody);
             this.body.setLinearDamping(0f);
-        }
-        else{
+        } else {
             this.currentState = State.FIXED;
             this.body.setType(BodyDef.BodyType.StaticBody);
             this.body.setLinearVelocity(0, 0);
@@ -49,32 +53,48 @@ private int row = -1, col  = -1;
     }
 
 
-public State getCurrentState(){
+    public State getCurrentState() {
         return currentState;
-}
-    public void setState(State bubbleState){
+    }
+
+    public void setState(State bubbleState) {
         currentState = bubbleState;
     }
-    public int getColorType(){
+
+    public int getColorType() {
         return colorType;
     }
-    public int getRow(){
+
+    public int getRow() {
         return row;
     }
-    public void setRow(int row){
+
+    public void setRow(int row) {
         this.row = row;
     }
-    public int getCol(){
+
+    // И добавь метод:
+    public void changeColor(int newColorId) {
+        this.colorType = newColorId;
+        // Сам забирает путь к текстуре из твоего массива настроек по индексу!
+        String texturePath = GameSettings.BUBBLE_TEXTURES[newColorId];
+        this.texture = new com.badlogic.gdx.graphics.Texture(com.badlogic.gdx.Gdx.files.internal(texturePath));
+    }
+
+    public int getCol() {
         return col;
     }
-    public void setCol(int col){
+
+    public void setCol(int col) {
+
         this.col = col;
     }
+
     public boolean isAlive() {
         return livesLeft > 0;
     }
 
-        public boolean isInFrame() {
+    public boolean isInFrame() {
         return getY() + height / 2 > 0;
     }
 
@@ -82,8 +102,8 @@ public State getCurrentState(){
     public void hit() {
         livesLeft -= 1;
     }
-    public void draw(SpriteBatch batch){
-        batch.draw(texture, getX() - (width/ 2f), getY() - (height/2f), width, height);
-    }
 
+    public void draw(SpriteBatch batch) {
+        batch.draw(texture, getX() - (width / 2f), getY() - (height / 2f), width, height);
+    }
 }
