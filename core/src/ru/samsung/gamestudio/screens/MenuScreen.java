@@ -20,15 +20,29 @@ public class MenuScreen extends ScreenAdapter {
     ButtonView startButtonView;
     ButtonView settingsButtonView;
     ButtonView exitButtonView;
-
+    MovingBackgroundView foreground;
+    public ButtonView infoButtonView;
     public MenuScreen(MyGdxGame myGdxGame) {
         this.myGdxGame = myGdxGame;
 
-        backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH_MENU);
-        titleView = new TextView(myGdxGame.largeWhiteFont, 180, 960, "Смешарики");
-        startButtonView = new ButtonView(140, 646, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "start");
-        settingsButtonView = new ButtonView(140, 551, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "settings");
-        exitButtonView = new ButtonView(140, 456, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "exit");
+        backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH);
+        foreground= new MovingBackgroundView(GameResources.FOREGROUND_IMG_PATH_MENU);
+//        titleView = new TextView(myGdxGame.largeWhiteFont, 180, 960, "Смешарики");
+//        startButtonView = new ButtonView(140, 646, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "start");
+//        settingsButtonView = new ButtonView(140, 551, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "settings");
+//        exitButtonView = new ButtonView(140, 456, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "exit");
+
+        // Объяви переменную InfoScreen infoScreen сверху класса, а в create() инициализируй:
+
+        titleView = new TextView(myGdxGame.largeWhiteFont, 160, 1100, "Смешарики: В Облака!"); // Новое крутое русское название!
+        startButtonView = new ButtonView(140, 400, 440, 65, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "старт");
+        settingsButtonView = new ButtonView(140, 310, 440, 65, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "настройки");
+
+// Наша новая кнопка справки! 📖✨
+
+        infoButtonView = new ButtonView(140, 220, 440, 65, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "справка");
+
+        exitButtonView = new ButtonView(140, 130, 440, 65, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "выход");
     }
 
     @Override
@@ -54,10 +68,13 @@ public class MenuScreen extends ScreenAdapter {
         myGdxGame.batch.begin();
 
         backgroundView.draw(myGdxGame.batch);
+        foreground.draw(myGdxGame.batch);
         titleView.draw(myGdxGame.batch);
         exitButtonView.draw(myGdxGame.batch);
         settingsButtonView.draw(myGdxGame.batch);
         startButtonView.draw(myGdxGame.batch);
+        infoButtonView.draw(myGdxGame.batch);
+
 
         myGdxGame.batch.end();
     }
@@ -83,6 +100,10 @@ public class MenuScreen extends ScreenAdapter {
                 }
                 Gdx.app.exit();
             }
+            if (infoButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                myGdxGame.setScreen(myGdxGame.infoScreen); // Переходим на экран способностей
+            }
+
         }
     }
 

@@ -39,10 +39,9 @@ public class GameObject {
     }
 
     public void hit() {
-        // all physics objects could be hit
+
     }
 
-    // Переменные для хранения координат на чистом Java, если Box2D тело уничтожено
     private int fallbackX = 0;
     private int fallbackY = 0;
 
@@ -81,14 +80,10 @@ public class GameObject {
         def.fixedRotation = true;
         Body body = world.createBody(def);
 
-        // --- УМЕНЬШАЕМ ФИЗИЧЕСКИЙ ХИТБОКС ДЛЯ ЛЁГКОГО ПРОЛЕТА ---
         CircleShape circleShape = new CircleShape();
 
-        // Умножаем радиус на 0.85f, чтобы физический шар был чуть меньше картинки
         float physicalRadius = (Math.max(width, height) * SCALE / 2f) * 0.85f;
         circleShape.setRadius(physicalRadius);
-        // --------------------------------------------------------
-
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
@@ -104,7 +99,4 @@ public class GameObject {
         body.setTransform(x * SCALE, y * SCALE, 0);
         return body;
     }
-
-
-
 }

@@ -14,16 +14,11 @@ import javax.swing.plaf.nimbus.State;
 
 public class Smesharik extends GameObject {
     private int livesLeft;
-
-    public enum State {NEW, FLYING, FIXED, FULLING}
-
-    ;
+    public enum State {NEW, FLYING, FIXED, FALLING}
     public State currentState;
     private int colorType;
     private int row = -1, col = -1;
-    // Добавь к переменным класса Smesharik:
     public boolean hitCeilingDirectly = false;
-
 
     public Smesharik(String texturePath, int x, int y, int colorType, World world, boolean isProjectile) {
         super(
@@ -36,7 +31,7 @@ public class Smesharik extends GameObject {
                 world
         );
 
-        this.livesLeft = 1; // Теперь каждый Смешарик официально "жив" при создании
+        this.livesLeft = 1;
         this.colorType = colorType;
         body.setGravityScale(0);
 
@@ -51,7 +46,6 @@ public class Smesharik extends GameObject {
         }
 
     }
-
 
     public State getCurrentState() {
         return currentState;
@@ -73,10 +67,8 @@ public class Smesharik extends GameObject {
         this.row = row;
     }
 
-    // И добавь метод:
     public void changeColor(int newColorId) {
         this.colorType = newColorId;
-        // Сам забирает путь к текстуре из твоего массива настроек по индексу!
         String texturePath = GameSettings.BUBBLE_TEXTURES[newColorId];
         this.texture = new com.badlogic.gdx.graphics.Texture(com.badlogic.gdx.Gdx.files.internal(texturePath));
     }
@@ -86,16 +78,7 @@ public class Smesharik extends GameObject {
     }
 
     public void setCol(int col) {
-
         this.col = col;
-    }
-
-    public boolean isAlive() {
-        return livesLeft > 0;
-    }
-
-    public boolean isInFrame() {
-        return getY() + height / 2 > 0;
     }
 
     @Override

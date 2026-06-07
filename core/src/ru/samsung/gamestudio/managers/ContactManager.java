@@ -1,19 +1,20 @@
 package ru.samsung.gamestudio.managers;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.ArrayList;
 
-import ru.samsung.gamestudio.GameSettings;
-import ru.samsung.gamestudio.objects.GameObject;
 import ru.samsung.gamestudio.objects.Smesharik;
 
 public class ContactManager {
 
     World world;
     private ArrayList<Smesharik> ballsToFix = new ArrayList<Smesharik>();
-
 
     public ContactManager(World world) {
         this.world = world;
@@ -33,49 +34,22 @@ public class ContactManager {
                     return;
                 }
 
-                int cDef = fixA.getFilterData().categoryBits;
-                int cDef2 = fixB.getFilterData().categoryBits;
-
-//                if ((cDef == GameSettings.FILTER_FLYING_BUBBLE && cDef2 == GameSettings.FILTER_FIXED_BUBBLES)
-//                        || (cDef2 == GameSettings.FILTER_FLYING_BUBBLE && cDef == GameSettings.FILTER_FIXED_BUBBLES)) {
-//
-//                    if (cDef == GameSettings.FILTER_FLYING_BUBBLE && fixA.getUserData() instanceof Smesharik) {
-//                        Smesharik flyingBall = (Smesharik) fixA.getUserData();
-//                        ballsToFix.add(flyingBall);
-//                    }
-//                    else if(cDef2 == GameSettings.FILTER_FLYING_BUBBLE && fixB.getUserData() instanceof Smesharik){
-//                        Smesharik flyingBall = (Smesharik) fixB.getUserData();
-//                        ballsToFix.add(flyingBall);
-//                    }
-//
-//                }
-
-
-
-                // Проверяем, что ОБА столкнувшихся объекта — это Смешарики (а не стены)
                 if (fixA.getUserData() instanceof Smesharik && fixB.getUserData() instanceof Smesharik) {
 
                     Smesharik ballA = (Smesharik) fixA.getUserData();
                     Smesharik ballB = (Smesharik) fixB.getUserData();
 
-                    // Ситуация 1: Шар А летит, а Шар Б уже зафиксирован
                     if (ballA.getCurrentState() == Smesharik.State.FLYING && ballB.getCurrentState() == Smesharik.State.FIXED) {
-                        // ДОБАВЛЯЕМ ПРОВЕРКУ: если мы этот шар уже планируем фиксировать, игнорируем повторный контакт!
                         if (!ballsToFix.contains(ballA)) {
                             ballsToFix.add(ballA);
                         }
                     }
-
-                    // Ситуация 2: Наоборот, Шар Б летит, а Шар А зафиксирован
                     else if (ballB.getCurrentState() == Smesharik.State.FLYING && ballA.getCurrentState() == Smesharik.State.FIXED) {
-                        // ДОБАВЛЯЕМ ПРОВЕРКУ:
                         if (!ballsToFix.contains(ballB)) {
                             ballsToFix.add(ballB);
                         }
                     }
                 }
-
-
             }
 
             @Override
@@ -98,5 +72,4 @@ public class ContactManager {
     public void clearBallsToFix(){
         ballsToFix.clear();
     }
-
 }

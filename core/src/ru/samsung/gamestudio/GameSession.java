@@ -1,9 +1,10 @@
 package ru.samsung.gamestudio;
-import com.badlogic.gdx.physics.box2d.World;
+
 import com.badlogic.gdx.utils.TimeUtils;
-import ru.samsung.gamestudio.managers.MemoryManager;
 
 import java.util.ArrayList;
+
+import ru.samsung.gamestudio.managers.MemoryManager;
 
 
 public class GameSession {
@@ -16,6 +17,7 @@ public class GameSession {
     int destructedSmesharikNumber;
     // Флаг, который сообщит экрану игры, что нужно запустить анимацию падения
     public boolean isGameOverTriggered = false;
+    public int lastRecordIndex = -1;
 
 
     public GameSession() {
@@ -54,6 +56,14 @@ public class GameSession {
         for (; foundIdx < Math.min(recordsTable.size(), 5); foundIdx++) {
             if (recordsTable.get(foundIdx) < getScore()) break;
         }
+
+        // Запоминаем позицию рекорда (если она в пределах топ-5)
+        if (foundIdx < 5) {
+            lastRecordIndex = foundIdx; // Индекс от 0 до 4
+        } else {
+            lastRecordIndex = -1; // Не попал в топ
+        }
+
         recordsTable.add(foundIdx, getScore());
         MemoryManager.saveTableOfRecords(recordsTable);
     }
@@ -62,7 +72,7 @@ public class GameSession {
     }
 
     public float getTrashPeriodCoolDown() {
-        return (float) Math.exp(-0.0003 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
+        return (float) Math.exp(-0.0012 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
     }
     public void addScore(int value){
         score+=value;

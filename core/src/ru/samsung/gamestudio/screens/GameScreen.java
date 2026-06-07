@@ -1,49 +1,49 @@
 package ru.samsung.gamestudio.screens;
 
-import static java.util.Arrays.fill;
-import static ru.samsung.gamestudio.GameSettings.BUBBLE_DIAMETER;
-import static ru.samsung.gamestudio.GameState.PAUSED;
 import static ru.samsung.gamestudio.GameState.PLAYING;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 
-import ru.samsung.gamestudio.*;
-import ru.samsung.gamestudio.components.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import ru.samsung.gamestudio.GameResources;
+import ru.samsung.gamestudio.GameSession;
+import ru.samsung.gamestudio.GameSettings;
+import ru.samsung.gamestudio.GameState;
+import ru.samsung.gamestudio.MyGdxGame;
+import ru.samsung.gamestudio.components.ButtonView;
+import ru.samsung.gamestudio.components.ImageView;
+import ru.samsung.gamestudio.components.LiveView;
+import ru.samsung.gamestudio.components.MovingBackgroundView;
+import ru.samsung.gamestudio.components.RecordsListView;
+import ru.samsung.gamestudio.components.TextView;
 import ru.samsung.gamestudio.managers.ContactManager;
 import ru.samsung.gamestudio.managers.MemoryManager;
 import ru.samsung.gamestudio.objects.AimLine;
 import ru.samsung.gamestudio.objects.ShipObject;
 import ru.samsung.gamestudio.objects.Smesharik;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class GameScreen extends ScreenAdapter {
 
     private MyGdxGame myGdxGame;
     GameSession gameSession;
     private ShipObject shipObject;
-
     ArrayList<Smesharik> smeshariks;
-
-
     ContactManager contactManager;
 
     // PLAY state UI
     MovingBackgroundView backgroundView;
-    ImageView topBlackoutView;
    LiveView liveView;
     TextView scoreTextView;
     ButtonView pauseButton;
@@ -65,8 +65,6 @@ public class GameScreen extends ScreenAdapter {
 
     private ArrayList<Smesharik> flyingBalls = new java.util.ArrayList<>();
     private ArrayList<Smesharik> ballsToRemove = new ArrayList<>();
-
-    // Инструмент для рисования линий и лазеров
     private AimLine aimLine;
 
     private float shakeTimer = 0f;    // Текущее время тряски
@@ -86,7 +84,7 @@ public class GameScreen extends ScreenAdapter {
 
 
     public GameScreen(MyGdxGame myGdxGame) {
-        try {
+
             this.myGdxGame = myGdxGame;
             gameSession = new GameSession();
 
@@ -103,26 +101,9 @@ public class GameScreen extends ScreenAdapter {
             );
 
             backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH);
-            // === ВНУТРИ КОНСТРУКТОРА GameScreen(MyGdxGame myGdxGame) ===
-// Ставим строго в левый нижний угол (0, 0). Картинка сама поднимется до высоты 650!
-            cloudLineView = new ImageView(0, 0, "textures/cloud_border.png");
-
-// Сразу переносим UI элементы вниз в конструкторе, чтобы не путаться с методами отрисовки:
-            scoreTextView = new TextView(myGdxGame.commonWhiteFont, 80, 60); // Очки слева внизу
-          //  liveView = new LiveView(320, 60);                               // Жизни по центру
+            cloudLineView = new ImageView(0, 30, "textures/cloud_border.png");
+            scoreTextView = new TextView(myGdxGame.commonWhiteFont, 80, 60);
             pauseButton = new ButtonView(620, 70, 46, 54, GameResources.PAUSE_IMG_PATH); // Пауза справа внизу
-
-
-
-
-//            topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
-//            liveView = new LiveView(305, 1215);
-//            scoreTextView = new TextView(myGdxGame.commonWhiteFont, 50, 1215);
-//            pauseButton = new ButtonView(
-//                    605, 1200,
-//                    46, 54,
-//                    GameResources.PAUSE_IMG_PATH
-//            );
 
             fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
             pauseTextView = new TextView(myGdxGame.largeWhiteFont, 282, 842, "Pause");
@@ -131,14 +112,14 @@ public class GameScreen extends ScreenAdapter {
                     200, 70,
                     myGdxGame.commonBlackFont,
                     GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                    "Home"
+                    "Домой"
             );
             continueButton = new ButtonView(
                     393, 695,
                     200, 70,
                     myGdxGame.commonBlackFont,
                     GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                    "Continue"
+                    "Продолжить"
             );
 
             recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
@@ -148,45 +129,23 @@ public class GameScreen extends ScreenAdapter {
                     160, 70,
                     myGdxGame.commonBlackFont,
                     GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                    "Home"
+                    "Домой"
             );
-
-            // Наш новый класс луча
             aimLine = new ru.samsung.gamestudio.objects.AimLine();
-
-        } catch (Exception e) {
-            // Если в конструкторе падает шрифт или картинка — мы увидим это в системной ошибке!
-            System.err.println("!!! КРИТИЧЕСКИЙ СБОЙ В КОНСТРУКТОРЕ GAMESCREEN !!!");
-            e.printStackTrace();
         }
-    }
 
-
-    // === НАЙДИ И ЗАМЕНИ МЕТОД show() В КЛАССЕ GameScreen.java ===
     @Override
     public void show() {
-        try {
-            // 1. Сначала принудительно включаем задорную игровую тему Смешариков (индекс 2)
-            // Метод playMusicForState сам намертво заглушит тему меню!
             if (myGdxGame != null && myGdxGame.audioManager != null) {
                 myGdxGame.audioManager.playMusicForState(2);
             }
-
-            // 2. Твой родной метод перезапуска параметров и очистки мира Box2D
             restartGame();
-
-        } catch (Exception e) {
-            System.err.println("!!! КРИТИЧЕСКИЙ СБОЙ В МЕТОДЕ SHOW !!!");
-            e.printStackTrace();
-        }
     }
-
 
     @Override
     public void render(float delta) {
         handleInput();
 
-        // === ЭФФЕКТ ТРЯСКИ ЭКРАНА (SCREEN SHAKE) ===
         if (shakeTimer > 0) {
             shakeTimer -= delta;
 
@@ -198,11 +157,7 @@ public class GameScreen extends ScreenAdapter {
         } else {
             myGdxGame.camera.position.set(GameSettings.SCREEN_WIDTH / 2f, GameSettings.SCREEN_HEIGHT / 2f, 0);
         }
-        // ======================================================
 
-        // ====================================================
-        // СИТУАЦИЯ А: ИГРА УЖЕ ЗАКОНЧИЛАСЬ (GameState.ENDED)
-        // ====================================================
         if (gameSession.state == GameState.ENDED) {
             if (gameSession.isGameOverTriggered) {
                 triggerSmesharikoPad();
@@ -214,12 +169,8 @@ public class GameScreen extends ScreenAdapter {
             return;
         }
 
-        // ====================================================
-        // СИТУАЦИЯ Б: ИДЕТ АКТИВНАЯ ИГРА (GameState.PLAYING)
-        // ====================================================
         if (gameSession.state == GameState.PLAYING) {
 
-            // === ТАЙМЕР НАСТУПЛЕНИЯ СЕТКИ ===
             if (com.badlogic.gdx.utils.TimeUtils.millis() > gameSession.nextTrashSpawnTime) {
                 shiftGridDownAndSpawnRow();
                 checkAndDropFloatingBalls();
@@ -229,7 +180,6 @@ public class GameScreen extends ScreenAdapter {
 
                 gameSession.nextTrashSpawnTime = com.badlogic.gdx.utils.TimeUtils.millis() + coolDownDelta;
             }
-            // ===============================================
 
             if (!shipObject.isAlive()) {
                 gameSession.endGame();
@@ -238,15 +188,13 @@ public class GameScreen extends ScreenAdapter {
             backgroundView.move();
             gameSession.updateScore();
             scoreTextView.setText("Score: " + gameSession.getScore());
-//            liveView.setLeftLives(shipObject.getLiveLeft());
 
             myGdxGame.stepWorld();
 
-            // Принудительно останавливаем Смешариков в сетке
             if (bubbleGrid != null) {
                 for (int i = 0; i < GameSettings.GRID_ROWS; i++) {
                     for (int j = 0; j < GameSettings.GRID_COLS; j++) {
-                        if (bubbleGrid[i][j] != null && bubbleGrid[i][j].getCurrentState() != Smesharik.State.FULLING) {
+                        if (bubbleGrid[i][j] != null && bubbleGrid[i][j].getCurrentState() != Smesharik.State.FALLING) {
                             bubbleGrid[i][j].body.setLinearVelocity(0, 0);
                             bubbleGrid[i][j].body.setAngularVelocity(0);
                         }
@@ -254,7 +202,6 @@ public class GameScreen extends ScreenAdapter {
                 }
             }
 
-            // ШТАТНАЯ ФИКСАЦИЯ СМЕШАРИКОВ ДРУГ О ДРУГА ИЗ ТВОЕГО CONTACT_MANAGER 🛡️
             ArrayList<Smesharik> ballsToFix = contactManager.getBallsToFix();
             if (ballsToFix != null && !ballsToFix.isEmpty()) {
                 for (Smesharik ball : ballsToFix) {
@@ -270,7 +217,6 @@ public class GameScreen extends ScreenAdapter {
                     flyingBalls.remove(ball);
                     ball.body.setAwake(true);
 
-                    // --- ПЕРЕХВАТ РОБОТА БИБИ (ID = 9) ПРИ СТОЛКНОВЕНИИ С ШАРАМИ ---
                     if (ball.getColorType() == 9) {
                         if (ball.getRow() >= 0 && ball.getCol() >= 0) {
                             bubbleGrid[ball.getRow()][ball.getCol()] = null;
@@ -305,14 +251,34 @@ public class GameScreen extends ScreenAdapter {
                         if (droppedCount > 0) {
                             gameSession.addScore(droppedCount * 200);
                         }
+
+                        // Если после всех взрывов и падений на поле НЕ ОСТАЛОСЬ ни одного шара
+                        if (countFixedBalls() == 0) {
+
+                            gameSession.addScore(5000);
+
+                            triggerPhrasePopup(9);
+
+                            if (myGdxGame.audioManager != null) {
+                                myGdxGame.audioManager.playSpecialMusic(myGdxGame.audioManager.bibiMusic);
+
+                                com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                                    @Override
+                                    public void run() {
+                                        if (gameSession.state == GameState.PLAYING) {
+                                            myGdxGame.audioManager.restoreBackgroundMusic(myGdxGame.audioManager.bibiMusic);
+                                        }
+                                    }
+                                }, 7.0f);
+                            }
+
+                            startScreenShake(0.6f, 9f);
+                        }
                     }
                 }
                 contactManager.clearBallsToFix();
             }
 
-            // =========================================================================
-            // ЖЕЛЕЗНЫЙ КАПКАН ДЛЯ ЛИПКОГО ПУСТОГО ПОТОЛКА 🛡️☁️
-            // =========================================================================
             if (flyingBalls != null && !flyingBalls.isEmpty()) {
                 for (int i = flyingBalls.size() - 1; i >= 0; i--) {
                     Smesharik flyingBall = flyingBalls.get(i);
@@ -323,7 +289,6 @@ public class GameScreen extends ScreenAdapter {
                         myGdxGame.audioManager.playExplosion();
                         fixBallInGrid(flyingBall);
 
-                        // --- ПЕРЕХВАТ РОБОТА БИБИ (ID = 9) ПРИ КАСАНИИ ПУСТОГО ПОТОЛКА ---
                         if (flyingBall.getColorType() == 9) {
                             if (flyingBall.getRow() >= 0 && flyingBall.getCol() >= 0) {
                                 bubbleGrid[flyingBall.getRow()][flyingBall.getCol()] = null;
@@ -333,7 +298,7 @@ public class GameScreen extends ScreenAdapter {
                             checkAndActivateSuperPowers(bibiList);
                             makeBallFall(flyingBall);
                             checkAndDropFloatingBalls();
-                            continue; // Переходим к следующему шару
+                            continue;
                         }
 
                         // Проверка "три в ряд" для обычных шаров на потолке
@@ -346,26 +311,21 @@ public class GameScreen extends ScreenAdapter {
                             }
                             checkAndActivateSuperPowers(matches);
                             checkAndDropFloatingBalls();
-                            if (matches.size() >= 5) { // Если лопнули 5 и более шаров за раз
-                                isBibiReady = true;    // Биби вылетает на помощь!
+                            if (matches.size() >= 5) {
+                                isBibiReady = true;
                             }
-
                         }
                     }
                 }
             }
-            // =========================================================================
-
             updateSmesharikoPad(delta);
         }
         if (popupTimer > 0) {
-            popupTimer -= delta; // Уменьшаем время, чтобы текст плавно исчезал
-            popupY += 35 * delta; // Текст будет очень мягко и красиво плыть вверх
+            popupTimer -= delta;
+            popupY += 35 * delta;
         }
         draw();
     }
-
-
 
     private void handleInput() {
            if (Gdx.input.isTouched()) {
@@ -396,14 +356,13 @@ public class GameScreen extends ScreenAdapter {
                     currentBall.body.setTransform(currentBall.body.getPosition(), angleRadians);
                 }
             }
-            // === ВНУТРИ handleInput() В КЛАССЕ GameScreen.java ===
+
             if (!Gdx.input.isTouched() && wasTouchedLastFrame) {
                 if (myGdxGame.touch != null && !pauseButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                     if (currentBall != null) {
                         float distanceFromCannonY = myGdxGame.touch.y - shipObject.getY();
                         if (distanceFromCannonY > GameSettings.CANNON_CANCEL_ZONE) {
 
-                            // 1. Твой родной расчет импульса скорости...
                             float angleRadians = shipObject.getRotation() * MathUtils.degreesToRadians;
                             float directionX = -MathUtils.sin(angleRadians);
                             float directionY = MathUtils.cos(angleRadians);
@@ -420,14 +379,7 @@ public class GameScreen extends ScreenAdapter {
                             flyingBalls.add(currentBall);
                             currentBall = null;
 
-                            // =========================================================
-                            // ЖЕЛЕЗНЫЙ СБРОС ТАЧА ОТ КАКОФОНИИ 🛡️✨
-                            // Как только снаряд запущен, мы мгновенно стираем координаты тача
-                            // из памяти игры, отправляя их в безопасный ноль (0, 0, 0),
-                            // где не висит ни одна кнопка меню или паузы!
-                            // =========================================================
                             myGdxGame.touch.set(0, 0, 0);
-                            // =========================================================
 
                             createNewBall();
                         }
@@ -452,12 +404,9 @@ break;
             break;
 
 
-        // НАЙДИ БЛОК case ENDED: В МЕТОДЕ handleInput() И ЗАМЕНИ ЕГО:
         case ENDED:
-            // Используем justTouched(), чтобы клик срабатывал только от НОВОГО нажатия,
-            // а не от старого пальца, который остался на экране после выстрела!
             if (Gdx.input.justTouched()) {
-                // Обновляем координаты тача строго для нового клика
+
                 myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
                 if (homeButton2.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
@@ -465,7 +414,6 @@ break;
                 }
             }
             break;
-
     }
 }
 
@@ -476,12 +424,8 @@ break;
 
         myGdxGame.batch.begin();
 
-        // СЛОЙ 1: Задний фон (Небо)
         if (backgroundView != null) backgroundView.draw(myGdxGame.batch);
 
-        // =========================================================================
-        // СЛОЙ 2: СМЕШАРИКИ НА ПОЛЕ И В ПОЛЕТЕ (Они улетают ПОД облачный ковер)
-        // =========================================================================
         if (smeshariks != null) {
             for (Smesharik ball : smeshariks) {
                 if (ball != null) ball.draw(myGdxGame.batch);
@@ -493,83 +437,73 @@ break;
             }
         }
 
-        // =========================================================================
-        // СЛОЙ 3: ТВОИ НОВЫЕ СВЕЖИЕ ОБЛАКА 720х650 (Полностью непрозрачные!) ☁️
-        // =========================================================================
-        // === ВНУТРИ ТВОЕГО МЕТОДА draw() ===
-        // === ВНУТРИ ТВОЕГО МЕТОДА draw() ===
         if (cloudLineView != null) {
             if (isSmesharikTooCloseToDanger()) {
-                // Тревожный нежно-розовый цвет при опасности (чуть прозрачный)
-                myGdxGame.batch.setColor(1.0f, 0.6f, 0.6f, 0.9f);
+                myGdxGame.batch.setColor(1.0f, 0.75f, 0.75f, 1.0f);
             } else {
-                // ИСПРАВЛЕНО: Мягкие, воздушные облака (прозрачность 80%)
-                // Сквозь них будет слегка просвечивать глубокий фон неба, создавая эффект тумана!
                 myGdxGame.batch.setColor(1.0f, 1.0f, 1.0f, 0.8f);
             }
 
             cloudLineView.draw(myGdxGame.batch);
-
             myGdxGame.batch.setColor(com.badlogic.gdx.graphics.Color.WHITE); // Сброс цвета
         }
 
-
-        // =========================================================================
-        // СЛОЙ 4: ШАРОЛЁТ И ЗАРЯЖЕННЫЙ СНАРЯД (Рисуются ПОВЕРХ облаков!)
-        // =========================================================================
         if (shipObject != null) shipObject.draw(myGdxGame.batch);
         if (currentBall != null) currentBall.draw(myGdxGame.batch);
 
-        // =========================================================================
-        // СЛОЙ 5: НИЖНИЙ ИНТЕРФЕЙС И ЭКРАНЫ ПАУЗЫ/ФИНАЛА (Вызываются без параметров координат)
-        // =========================================================================
         if (scoreTextView != null) scoreTextView.draw(myGdxGame.batch);
-       if (liveView != null) liveView.draw(myGdxGame.batch);
+        if (liveView != null) liveView.draw(myGdxGame.batch);
         if (pauseButton != null) pauseButton.draw(myGdxGame.batch);
 
-        // Экраны Паузы и Финала (Блокируют весь экран поверх игры)
         if (gameSession.state == GameState.PAUSED) {
             if (fullBlackoutView != null) fullBlackoutView.draw(myGdxGame.batch);
             if (pauseTextView != null) pauseTextView.draw(myGdxGame.batch);
             if (homeButton != null) homeButton.draw(myGdxGame.batch);
             if (continueButton != null) continueButton.draw(myGdxGame.batch);
-        } else if (gameSession.state == GameState.ENDED) {
-            if (fullBlackoutView != null) fullBlackoutView.draw(myGdxGame.batch);
-            if (recordsTextView != null) recordsTextView.draw(myGdxGame.batch);
-            if (recordsListView != null) recordsListView.drawRecords(myGdxGame.batch);
-            if (homeButton2 != null) homeButton2.draw(myGdxGame.batch);
+        }else if (gameSession.state == GameState.ENDED) {
+        if (fullBlackoutView != null) fullBlackoutView.draw(myGdxGame.batch);
+
+        String currentScoreText = "ТВОЙ РЕЗУЛЬТАТ: " + gameSession.getScore();
+        GlyphLayout scoreLayout = new GlyphLayout(myGdxGame.largeWhiteFont, currentScoreText);
+        float scoreX = (GameSettings.SCREEN_WIDTH - scoreLayout.width) / 2;
+
+        myGdxGame.largeWhiteFont.setColor(Color.GOLD);
+        myGdxGame.largeWhiteFont.draw(myGdxGame.batch, currentScoreText, scoreX, 980);
+        myGdxGame.largeWhiteFont.setColor(Color.WHITE); // сброс
+
+        if (recordsTextView != null) {
+
+            recordsTextView.setText("ТАБЛИЦА РЕКОРДОВ");
+
+            GlyphLayout titleLayout = new GlyphLayout(myGdxGame.largeWhiteFont, "ТАБЛИЦА РЕКОРДОВ");
+            float titleX = (GameSettings.SCREEN_WIDTH - titleLayout.width) / 2;
+            myGdxGame.largeWhiteFont.draw(myGdxGame.batch, "ТАБЛИЦА РЕКОРДОВ", titleX, 860);
         }
 
-        // === ВНУТРИ МЕТОДА draw() В САМОМ КОНЦЕ БАТЧА (ДО batch.end()) ===
+        if (recordsListView != null) {
+            recordsListView.drawRecords(myGdxGame.batch);
+        }
 
-        // ОТРИСОВКА ПОДБАДРИВАЮЩИХ ФРАЗ СМЕШАРИКОВ 🗣️💬
+        if (homeButton2 != null) homeButton2.draw(myGdxGame.batch);
+    }
         if (popupTimer > 0 && popupText != null && !popupText.isEmpty()) {
             float alpha = Math.min(popupTimer / 0.5f, 1f);
 
-            // Красивый, сочный золотисто-желтый цвет для мультяшного стиля
             myGdxGame.largeWhiteFont.setColor(1f, 0.85f, 0.1f, alpha);
 
-            // Сместили X на 120, чтобы длинные слова типа COMPRESSION или PHENOMENAL встали идеально по центру!
             myGdxGame.largeWhiteFont.draw(myGdxGame.batch, popupText, 160, popupY);
-
 
             myGdxGame.largeWhiteFont.setColor(Color.WHITE);
         }
-        myGdxGame.batch.end(); // Твой родной конец батча картинок
+        myGdxGame.batch.end();
 
-
-        // СЛОЙ 6: Лазерный прицел
         if (com.badlogic.gdx.Gdx.input.isTouched() && aimLine != null && currentBall != null) {
             aimLine.drawRecords(myGdxGame.batch, myGdxGame.camera.combined, bubbleGrid, shipObject, currentBall);
         }
     }
 
-
-
-
-
     private void restartGame() {
-        try {
+
             if (contactManager != null) {
                 contactManager.clearBallsToFix();
             }
@@ -595,9 +529,8 @@ break;
             shipObject = null;
             bubbleGrid = new Smesharik[GameSettings.GRID_ROWS][GameSettings.GRID_COLS];
 
-            // Заполняем верхнюю половину игрового поля (до GRID_ROWS / 2) при старте игры
             for (int i = 0; i < GameSettings.GRID_ROWS / 2; i++) {
-                spawnRow(i); // Просто вызываем нашу новую функцию для каждой строки!
+                spawnRow(i);
             }
 
             if (myGdxGame != null && myGdxGame.world != null) {
@@ -653,37 +586,19 @@ break;
                 topEdge.dispose();
             }
 
-            // Безопасно инициализируем таблицу рекордов при самом первом старте
             if (recordsListView != null) {
-                try {
                     ArrayList<Integer> table = MemoryManager.loadRecordsTable();
                     if (table == null) table = new ArrayList<>();
-                    recordsListView.setRecords(table);
-                } catch (Exception e) {
-                    ArrayList<Integer> emptyTable = new ArrayList<>();
-                    recordsListView.setRecords(emptyTable);
-                }
+                    recordsListView.setRecordsWithHighlight(MemoryManager.loadRecordsTable(), gameSession.lastRecordIndex);
             }
-
-        } catch (Exception e) {
-            // Если упала абсолютно любая строчка — ловушка поймает её и выведет ошибку в консоль,
-            // но само приложение при этом продолжит работать!
-            Gdx.app.log("RESTART_CATCHER", "Произошел сбой при старте: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
-
-
 
     private void createNewBall() {
         int randomId;
 
-        // Оставляем редкий шанс 1% на появление Биби 💎🤖
         if (Math.random() < 0.005f) {
             randomId = 9;
         } else {
-            // ИСПРАВЛЕНИЕ: Пушка берёт СЛУЧАЙНОГО обычного Смешарика (от 0 до 8)
-            // Полная независимость от того, что творится на поле!
             randomId = (int) (Math.random() * (GameSettings.BUBBLE_TEXTURES.length - 1));
         }
 
@@ -691,9 +606,6 @@ break;
         int spawnY = shipObject.getY() + GameSettings.BUBBLE_DIAMETER;
         currentBall = new Smesharik(texturePath, shipObject.getX(), spawnY, randomId, myGdxGame.world, true);
     }
-
-
-
 
     private void fixBallInGrid(Smesharik flyingBall) {
         flyingBall.body.setLinearVelocity(0, 0);
@@ -703,42 +615,29 @@ break;
 
         int row;
 
-        // 1. Если был четкий удар о потолок — это строго 0-й ряд
         if (flyingBall.hitCeilingDirectly) {
             row = 0;
             flyingBall.hitCeilingDirectly = false; // Сбрасываем флаг
         } else {
-            // 2. ИСПРАВЛЕНИЕ: Считаем строку штатно, но принудительно ограничиваем её
-            // максимальным размером сетки, чтобы округление физики Box2D никогда не выдавало 8 или 9!
             float calculatedRow = (GameSettings.SCREEN_HEIGHT - flyingBall.getY()) / GameSettings.ROW_HEIGHT;
             row = (int) calculatedRow;
 
-            // Защита от микро-погрешностей: если шар коснулся нижнего края, не даем ему вылезти за рамки
             if (row >= GameSettings.GRID_ROWS) {
-                row = GameSettings.GRID_ROWS - 1; // Сажаем в самую нижнюю доступную строчку сетки (7)
+                row = GameSettings.GRID_ROWS - 1;
             }
         }
 
-        // 3. ЖЕЛЕЗНЫЙ ЗАМОК ОТ ПРОИГРЫША
-        // Теперь игра будет заканчиваться только тогда, когда Смешарик РЕАЛЬНО пересечет линию облаков (CRITICAL_Y_LINE)
-        // а не из-за случайной математики индексов строки!
         if (flyingBall.getY() < GameSettings.CRITICAL_Y_LINE || row < 0) {
             gameSession.endGame(); // Включаем финал игры и листопад, только если шар упал ниже облаков!
             if (recordsListView != null) {
-                recordsListView.setRecords(MemoryManager.loadRecordsTable());
+                recordsListView.setRecordsWithHighlight(MemoryManager.loadRecordsTable(), gameSession.lastRecordIndex);
             }
             return;
         }
 
-        // ... дальше идет весь твой родной рабочий код расчета столбцов: boolean isOddRow = (row % 2 != 0)...
-
-        // === ВОТ ЭТОТ КУСОК ДОБАВЛЯЕМ ДЛЯ ЛИПКОГО ПОТОЛКА ===
-        // Если шар физически долетел до самого верха экрана, принудительно ставим его в строку 0!
         if (flyingBall.getY() >= GameSettings.SCREEN_HEIGHT - GameSettings.BUBBLE_DIAMETER) {
             row = 0;
         }
-        // ====================================================
-
 
         boolean isOddRow = (row % 2 != 0);
         int targetX = flyingBall.getX();
@@ -747,20 +646,17 @@ break;
         }
         int col = (int) (targetX / GameSettings.BUBBLE_DIAMETER);
 
-        // Проверяем границы столбцов, чтобы там тоже не вылезло -1
         if (col < 0) col = 0;
         int maxCol = isOddRow ? (GameSettings.GRID_COLS - 2) : (GameSettings.GRID_COLS - 1);
         if (col > maxCol) col = maxCol;
 
-        // Поиск свободной ячейки ниже (только внутри безопасных границ)
         while (row < GameSettings.GRID_ROWS && bubbleGrid[row][col] != null) {
             row++;
 
-            // Если в процессе сдвига мы опять переполнили сетку — это проигрыш
             if (row >= GameSettings.GRID_ROWS) {
                 gameSession.endGame();
                 if (recordsListView != null) {
-                    recordsListView.setRecords(MemoryManager.loadRecordsTable());
+                    recordsListView.setRecordsWithHighlight(MemoryManager.loadRecordsTable(), gameSession.lastRecordIndex);
                 }
                 return;
             }
@@ -777,7 +673,6 @@ break;
             if (col > maxColsNow) col = maxColsNow;
         }
 
-        // Записываем Смешарика на безопасное место
         bubbleGrid[row][col] = flyingBall;
         flyingBall.setCol(col);
         flyingBall.setRow(row);
@@ -805,7 +700,6 @@ break;
             offsets = new int[][]{{0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {1, -1}, {1, 0}};
         }
 
-        // ИСПРАВЛЕНО: Правильный обход двумерного массива смещений (offset[0] и offset[1])
         for (int[] offset : offsets) {
             int iRow = row + offset[0];
             int iCol = col + offset[1];
@@ -849,7 +743,6 @@ break;
         boolean[][] visited = new boolean[rows][cols];
         Queue<Smesharik> queue = new LinkedList<>();
 
-        // Шаг 1. Ищем Смешариков на потолке
         for (int j = 0; j < cols; j++) {
             Smesharik ball = bubbleGrid[0][j];
             if (ball != null) {
@@ -858,7 +751,6 @@ break;
             }
         }
 
-        // Шаг 2. Запускаем BFS цепную проверку от потолка
         while (!queue.isEmpty()) {
             Smesharik curr = queue.poll();
             ArrayList<Smesharik> neighbors = getNeighbors(curr.getRow(), curr.getCol());
@@ -875,18 +767,12 @@ break;
             }
         }
 
-        // Шаг 3. Безопасный перевод оторвавшихся шаров в режим падения
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Smesharik ball = bubbleGrid[i][j];
 
-                // Если Смешарик существует, но волна BFS до него не дошла (нет связи с потолком)
                 if (ball != null && !visited[i][j]) {
-
-                    // Мгновенно убираем его из сетки поля
                     bubbleGrid[i][j] = null;
-
-                    // Вызываем наш главный безопасный метод переключения падения!
                     makeBallFall(ball);
                 }
             }
@@ -910,9 +796,6 @@ break;
         int cols = GameSettings.GRID_COLS;
         int lastRowIndex = rows - 1;
 
-        // =========================================================================
-        // БЛОК 1: ПРОВЕРКА НА GAME OVER (НИЖНЯЯ ГРАНИЦА ЭКРАНА)
-        // =========================================================================
         boolean lastRowIsOdd = (lastRowIndex % 2 != 0);
         int lastRowCols = lastRowIsOdd ? (cols - 1) : cols;
 
@@ -920,54 +803,39 @@ break;
             if (bubbleGrid[lastRowIndex][j] != null) {
                 gameSession.endGame();
                 if (recordsListView != null) {
-                    recordsListView.setRecords(MemoryManager.loadRecordsTable());
+                    recordsListView.setRecordsWithHighlight(MemoryManager.loadRecordsTable(), gameSession.lastRecordIndex);
                 }
-                return; // Мгновенный выход из метода, сдвиг отменяется
+                return;
             }
         }
 
-        // Временный массив-буфер («разделочная доска») для безопасной сборки строки
         Smesharik[] nextRowBuffer = new Smesharik[cols];
 
-        // =========================================================================
-        // БЛОК 2: ГЛАВНЫЙ ЦИКЛ СДВИГА СЕТКИ СВЕРХУ ВНИЗ (ИДЕМ СНИЗУ ВВЕРХ ПО МАССИВУ)
-        // =========================================================================
         for (int i = lastRowIndex; i > 0; i--) {
             boolean currentRowIsOdd = (i % 2 != 0);
-            boolean prevRowIsOdd = !currentRowIsOdd; // Твоя оптимизация: противоположный boolean
+            boolean prevRowIsOdd = !currentRowIsOdd;
 
             int currentMaxCols = currentRowIsOdd ? (cols - 1) : cols;
             int prevMaxCols = prevRowIsOdd ? (cols - 1) : cols;
 
-            // Очищаем буфер перед сборкой текущей строки
             java.util.Arrays.fill(nextRowBuffer, null);
 
-            // 2.1. Стандартное копирование элементов, которые гарантированно влезают
-            // === ВНУТРИ МЕТОДА shiftGridDownAndSpawnRow() В GameScreen.java ===
-
-// 2.1. Стандартное копирование элементов из оригинальной bubbleGrid
             for (int j = 0; j < prevMaxCols; j++) {
                 if (j < currentMaxCols) {
                     Smesharik checkingBall = bubbleGrid[i - 1][j];
 
-                    // ИСПРАВЛЕНИЕ: Проверяем шарик перед копированием 🛡️🤖
-                    // Если в ячейке сидит Биби (индекс 9), мы ЖЕСТКО стираем его
-                    // и не даем ему скопироваться в буфер наступающей сетки!
                     if (checkingBall != null && checkingBall.getColorType() == 9) {
-                        nextRowBuffer[j] = null; // Биби исчезает и не застревает на поле
+                        nextRowBuffer[j] = null;
                     } else {
-                        nextRowBuffer[j] = checkingBall; // Обычных Смешариков копируем штатно
+                        nextRowBuffer[j] = checkingBall;
                     }
                 }
             }
 
-
-            // 2.2. АЛГОРИТМ ЧЕСТНОГО СЖАТИЯ СТРОКИ (Обработка лишнего 8-го шага при переходе из 8 в 7)
             if (!prevRowIsOdd && currentRowIsOdd) {
-                Smesharik extraBall = bubbleGrid[i - 1][cols - 1]; // Забираем крайний 8-й шар (j = 7)
+                Smesharik extraBall = bubbleGrid[i - 1][cols - 1];
 
                 if (extraBall != null) {
-                    // Ищем первую пустую ячейку справа налево в собранном буфере
                     int emptyJ = -1;
                     for (int targetJ = currentMaxCols - 1; targetJ >= 0; targetJ--) {
                         if (nextRowBuffer[targetJ] == null) {
@@ -977,14 +845,11 @@ break;
                     }
 
                     if (emptyJ != -1) {
-                        // Схлопывание пустоты: сдвигаем влево элементы правее этой пустоты
                         for (int moveJ = emptyJ; moveJ < currentMaxCols - 1; moveJ++) {
                             nextRowBuffer[moveJ] = nextRowBuffer[moveJ + 1];
                         }
-                        // В освободившуюся крайнюю правую ячейку (j = 6) сажаем наш 8-й шар
                         nextRowBuffer[currentMaxCols - 1] = extraBall;
                     } else {
-                        // Если ряд полностью забит: сжать нельзя, безопасно удаляем шар из памяти
                         smeshariks.remove(extraBall);
                         if (extraBall.body != null) {
                             myGdxGame.world.destroyBody(extraBall.body);
@@ -993,23 +858,20 @@ break;
                 }
             }
 
-            // 2.3. ПЕРЕНОС ИЗ БУФЕРА В СЕТКУ И СИНХРОНИЗАЦИЯ С ФИЗИКОЙ BOX2D
             for (int j = 0; j < cols; j++) {
                 bubbleGrid[i][j] = nextRowBuffer[j];
 
                 if (bubbleGrid[i][j] != null) {
-                    // Записываем Смешарику его новые дискретные индексы в графе
+
                     bubbleGrid[i][j].setRow(i);
                     bubbleGrid[i][j].setCol(j);
 
-                    // Вычисляем новые графические пиксели с учетом шахматного сдвига ряда
                     int newX = GameSettings.BUBBLE_RADIUS + (j * GameSettings.BUBBLE_DIAMETER) + (currentRowIsOdd ? GameSettings.BUBBLE_RADIUS : 0);
                     int newY = (int) (GameSettings.SCREEN_HEIGHT - GameSettings.BUBBLE_RADIUS - (i * GameSettings.ROW_HEIGHT));
 
                     bubbleGrid[i][j].setX(newX);
                     bubbleGrid[i][j].setY(newY);
 
-                    // Телепортируем физическое тело Box2D в новую позицию (переводим пиксели в метры)
                     if (bubbleGrid[i][j].body != null) {
                         float scale = GameSettings.SCALE;
                         bubbleGrid[i][j].body.setTransform(newX * scale, newY * scale, 0);
@@ -1018,11 +880,7 @@ break;
             }
         }
 
-        // =========================================================================
-        // БЛОК 3: ГЕНЕРАЦИЯ СВЕЖЕГО ВЕРХНЕГО РЯДА (СТРОКА 0)
-        // =========================================================================
-        spawnRow(0); // Вызываем наш красивый универсальный метод для нулевой строки!
-        // Включаем тряску! Длительность — 0.25 секунды, сила — 8 пикселей
+        spawnRow(0);
         startScreenShake(0.25f, 3f);
     }
 
@@ -1032,8 +890,6 @@ break;
         int currentCols = isOddRow ? (cols - 1) : cols;
 
         int y = (int) (GameSettings.SCREEN_HEIGHT - GameSettings.BUBBLE_RADIUS - (rowIdx * GameSettings.ROW_HEIGHT));
-
-        int lastColorId = -1;
 
         for (int j = 0; j < currentCols; j++) {
             int x = GameSettings.BUBBLE_RADIUS + (j * GameSettings.BUBBLE_DIAMETER);
@@ -1093,7 +949,7 @@ break;
         if (ball == null) return;
 
         // Включаем стейт FULLING, чтобы его подхватил крутящийся каждый кадр МЕТОД 2
-        ball.setState(Smesharik.State.FULLING);
+        ball.setState(Smesharik.State.FALLING);
 
         // Выключаем физику Box2D, чтобы хитбокс не застревал в стенах
         if (ball.body != null) {
@@ -1111,7 +967,7 @@ break;
         for (int i = smeshariks.size() - 1; i >= 0; i--) {
             Smesharik s = smeshariks.get(i);
 
-            if (s.getCurrentState() == Smesharik.State.FULLING) {
+            if (s.getCurrentState() == Smesharik.State.FALLING) {
                 // Создаем уникальное число для каждого Смешарика на основе его хэша
                 int seed = Math.abs(s.hashCode());
 
@@ -1412,20 +1268,38 @@ break;
 ////                    gameSession.addScore(bonusPoints);
 ////                    break;
 
-                case 8: // 🦉 СОВУНЬЯ: Витаминный Заряд (Дарит игроку Дополнительную Жизнь! ❤️)
-                    // Раньше она просто давала скучные очки. Теперь Совунья лечит Шаролёт!
-                    if (shipObject != null) {
-                        // Добавляем пушке +1 жизнь (но не больше максимальных 3, чтобы соблюдать баланс)
-                        if (shipObject.getLiveLeft() < 3) {
-                            // Если у твоего ShipObject переменная livesLeft приватная,
-                            // сделай для нее метод shipObject.addLife() или просто прибавь, если она public
-                            shipObject.livesLeft += 1;
+                case 8: // 🦉 СОВУНЬЯ: Мудрый совет! 🍎🩺
+                    // Больше никаких лишних жизней. Совунья сканирует поле и ищет самый частый цвет!
+                    int[] colorCounts = new int[9];
+                    for (int r = 0; r < rows; r++) {
+                        int maxCols = (r % 2 != 0) ? (cols - 1) : cols;
+                        for (int j = 0; j < maxCols; j++) {
+                            if (bubbleGrid[r][j] != null) {
+                                int c = bubbleGrid[r][j].getColorType();
+                                if (c >= 0 && c < 9) colorCounts[c]++;
+                            }
                         }
                     }
-                    // А если жизни полные — начисляет огромный бонус очков!
-                    gameSession.addScore(matches.size() * 500);
-                    startScreenShake(0.2f, 3f); // Мягкий эффект исцеления
+
+                    // Находим ID цвета, которого на поле больше всего
+                    int mostFrequentColorId = 0;
+                    int maxCount = 0;
+                    for (int c = 0; c < 9; c++) {
+                        if (colorCounts[c] > maxCount) {
+                            maxCount = colorCounts[c];
+                            mostFrequentColorId = c;
+                        }
+                    }
+
+                    // ХИТРЫЙ ТРЮК: Совунья принудительно перекрашивает текущий снаряд в пушке Шаролёта
+                    // в этот самый частый цвет, даря игроку 100% шанс на победное комбо!
+                    if (currentBall != null && maxCount > 0) {
+                        currentBall.changeColor(mostFrequentColorId);
+                    }
+
+                    gameSession.addScore(matches.size() * 300); // Даем приятный бонус очков
                     break;
+
 
 
 ////                case 9: // 🤖 БИБИ: УЛЬТИМАТИВНЫЙ СБРОС ВСЕЙ МАТРИЦЫ (ПИН-КОД АКТИВИРОВАН!) 🚀⚡
@@ -1616,23 +1490,49 @@ break;
     // ИСПРАВЛЕНИЕ: Теперь метод принимает ID персонажа! 🗣️💬
     public void triggerPhrasePopup(int colorId) {
         popupTimer = POPUP_DURATION;
-        popupY = 750f;
+        popupY = 750f; // Держим текст по центру экрана
 
+        String[] phrases;
 
-        // СТРОГИЙ ПОДБОР ФРАЗЫ ПОД КАЖДОГО СМЕШАРИКА 🎨
         switch (colorId) {
-            case 0: popupText = "Ёлки-иголки! 🦔"; break;       // Крош
-            case 1: popupText = "Кузинатра!.. 💘"; break;       // Нюша
-            case 2: popupText = "Подумать только... 👓"; break; // Ёжик
-            case 3: popupText = "Укуси меня пчела! 🐻"; break;   // Копатыч
-            case 4: popupText = "Ах, вдохновение! 🐑"; break;     // Бараш
-            case 5: popupText = "Карамба! 🐧"; break;             // Карыч
-            case 6: popupText = "Феноменально! 🦌"; break;       // Лосяш
-            case 7: popupText = "Компрессия! 🔧"; break;          // Пин
-            case 8: popupText = "Куда катится мир?! 🦉"; break;  // Совунья
-            case 9: popupText = "Полный рассинхрон! 🤖"; break;   // Робот Биби
-
+            case 0: // Крош
+                phrases = new String[]{"Ёлки-иголки!", "От винта!", "Ура-а! Половина ряда долой!"};
+                break;
+            case 1: // Nusha
+                phrases = new String[]{"Кузинатра!", "Ой, я такая воздушная!", "Пробиваю путь вверх! 💘"};
+                break;
+            case 2: // Ежик
+                phrases = new String[]{"Подумать только", "Феноменальный взрыв!", "Ой, мамочки, всё лопнуло!"};
+                break;
+            case 3: // Копатыч
+                phrases = new String[]{"Укуси меня пчела!", "Собираем урожай! 🌾", "Запасы на зиму готовы!"};
+                break;
+            case 4: // Бараш
+                phrases = new String[]{"Ах, вдохновение!", "Крашу под цвет пушки! 🎨", "Творческий порыв!"};
+                break;
+            case 5: // Карыч
+                phrases = new String[]{"Карамба!", "Музыкальная пауза! 🎵", "Время, замри!"};
+                break;
+            case 6: // Лосяш
+                phrases = new String[]{"Феноменально!", "Интересный артефакт", "Нижний ряд ликвидирован! 🦌"};
+                break;
+            case 7: // Пин
+                phrases = new String[]{"Компрессия!", "О майн гот!", "Дас ист фантастиш! 🔧"};
+                break;
+            case 8: // Совунья
+                phrases = new String[]{"Куда катится мир?!", "Вот тебе лучший смешарик! 🩺", "Витаминный заряд!"};
+                break;
+            case 9: // Робот Биби
+                phrases = new String[]{"Полный рассинхрон!", "Биби-буст! 🤖⚡", "Квантовый бабах!"};
+                break;
+            default:
+                phrases = new String[]{"Комбо! ✨"};
+                break;
         }
+
+        // Выбираем случайную фразу из массива конкретного персонажа 🎲
+        int randIdx = (int) (Math.random() * phrases.length);
+        popupText = phrases[randIdx];
     }
 
 

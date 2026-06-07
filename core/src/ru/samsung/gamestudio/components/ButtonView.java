@@ -48,5 +48,4 @@ public class ButtonView extends View {
         texture.dispose();
         if (bitmapFont != null) bitmapFont.dispose();
     }
-
 }

@@ -7,6 +7,7 @@ public class GameResources {
     public static final String BACKGROUND_IMG_PATH = "textures/background.png";
     public static final String BACKGROUND_IMG_PATH_MENU = "textures/background_menu.png";
 
+    public static final String FOREGROUND_IMG_PATH_MENU = "textures/foreground_menu.png";
 
     public static final String BLACKOUT_FULL_IMG_PATH = "textures/blackout_full.png";
     public static final String BLACKOUT_TOP_IMG_PATH = "textures/blackout_top.png";
@@ -30,7 +31,7 @@ public class GameResources {
 
     // Fonts for text
 
-    public static final String FONT_PATH = "fonts/smeshariki_font.otf";
+    public static final String FONT_PATH = "fonts/Montserrat-Bold.ttf";
 
 
 

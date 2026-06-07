@@ -10,7 +10,6 @@ import ru.samsung.gamestudio.GameSettings;
 
 public class ShipObject extends GameObject {
 
-    long lastShotTime;
     public int livesLeft;
     private float rotation = 0f;
     public ShipObject(int x, int y, int width, int height, String texturePath, World world) {
@@ -24,10 +23,6 @@ public class ShipObject extends GameObject {
     }
     public void setRotation(float rotation){
         this.rotation = rotation;
-    }
-
-    public int getLiveLeft() {
-        return livesLeft;
     }
 
     @Override
@@ -49,37 +44,6 @@ public class ShipObject extends GameObject {
                 texture.getHeight(),
                 false, false
         );
-    }
-
-//    public void move(Vector3 vector3) {
-//        body.applyForceToCenter(new Vector2(
-//                        (vector3.x - getX()) * GameSettings.SHIP_FORCE_RATIO,
-//                        (vector3.y - getY()) * GameSettings.SHIP_FORCE_RATIO),
-//                true
-//        );
-//    }
-
-//    private void putInFrame() {
-//        if (getY() > (GameSettings.SCREEN_HEIGHT / 2f - height / 2f)) {
-//            setY((int) (GameSettings.SCREEN_HEIGHT / 2f - height / 2f));
-//        }
-//        if (getY() <= (height / 2f)) {
-//            setY(height / 2);
-//        }
-//        if (getX() < (-width / 2f)) {
-//            setX(GameSettings.SCREEN_WIDTH);
-//        }
-//        if (getX() > (GameSettings.SCREEN_WIDTH + width / 2f)) {
-//            setX(0);
-//        }
-//    }
-
-    public boolean needToShoot() {
-        if (TimeUtils.millis() - lastShotTime >= GameSettings.SHOOTING_COOL_DOWN) {
-            lastShotTime = TimeUtils.millis();
-            return true;
-        }
-        return false;
     }
 
     @Override

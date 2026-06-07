@@ -13,8 +13,7 @@ public class ImageView extends View {
         this.width = texture.getWidth() ;
         this.height = texture.getHeight() ;
     }
-    // === НАШ НОВЫЙ УМНЫЙ КОНСТРУКТОР ДЛЯ ОБЛАКОВ ===
-    // Позволяет вручную задать ширину и высоту (например, растянуть во весь экран)
+
     public ImageView(float x, float y, float width, float height, String imagePath) {
         super(x, y);
         texture = new Texture(imagePath);
@@ -30,5 +29,4 @@ public class ImageView extends View {
     public void dispose() {
         texture.dispose();
     }
-
 }

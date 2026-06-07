@@ -31,20 +31,20 @@ public class SettingsScreen extends ScreenAdapter {
         this.myGdxGame = myGdxGame;
 
         backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH);
-        titleTextView = new TextView(myGdxGame.largeWhiteFont, 256, 956, "Settings");
+        titleTextView = new TextView(myGdxGame.largeWhiteFont, 256, 956, "Настройки");
         blackoutImageView = new ImageView(85, 365, GameResources.BLACKOUT_MIDDLE_IMG_PATH);
-        clearSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 599, "clear records");
+        clearSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 599, "очистить рекорды");
 
         musicSettingView = new TextView(
                 myGdxGame.commonWhiteFont,
                 173, 717,
-                "music: " + translateStateToText(MemoryManager.loadIsMusicOn())
+                "музыка: " + translateStateToText(MemoryManager.loadIsMusicOn())
         );
 
         soundSettingView = new TextView(
                 myGdxGame.commonWhiteFont,
                 173, 658,
-                "sound: " + translateStateToText(MemoryManager.loadIsSoundOn())
+                "звуки: " + translateStateToText(MemoryManager.loadIsSoundOn())
         );
 
         returnButton = new ButtonView(
@@ -52,7 +52,7 @@ public class SettingsScreen extends ScreenAdapter {
                 160, 70,
                 myGdxGame.commonBlackFont,
                 GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                "return"
+                "назад"
         );
 
     }
@@ -68,15 +68,15 @@ public class SettingsScreen extends ScreenAdapter {
 
         // 2. Сбрасываем текст очистки рекордов к исходному состоянию при каждом входе
         if (clearSettingView != null) {
-            clearSettingView.setText("clear records");
+            clearSettingView.setText("очистить рекорды");
         }
 
         // 3. На всякий случай обновляем текст звука и музыки, если они менялись в игре
         if (musicSettingView != null) {
-            musicSettingView.setText("music: " + translateStateToText(MemoryManager.loadIsMusicOn()));
+            musicSettingView.setText("музыка: " + translateStateToText(MemoryManager.loadIsMusicOn()));
         }
         if (soundSettingView != null) {
-            soundSettingView.setText("sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
+            soundSettingView.setText("звуки: " + translateStateToText(MemoryManager.loadIsSoundOn()));
         }
     }
     // =========================================================================
@@ -117,16 +117,16 @@ public class SettingsScreen extends ScreenAdapter {
             }
             if (clearSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                 MemoryManager.saveTableOfRecords(new ArrayList<>());
-                clearSettingView.setText("clear records (cleared)");
+                clearSettingView.setText("очистить рекорды(очищены)");
             }
             if (musicSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                 MemoryManager.saveMusicSettings(!MemoryManager.loadIsMusicOn());
-                musicSettingView.setText("music: " + translateStateToText(MemoryManager.loadIsMusicOn()));
+                musicSettingView.setText("музыка: " + translateStateToText(MemoryManager.loadIsMusicOn()));
                 myGdxGame.audioManager.updateMusicFlag();
             }
             if (soundSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                 MemoryManager.saveSoundSettings(!MemoryManager.loadIsSoundOn());
-                soundSettingView.setText("sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
+                soundSettingView.setText("звуки: " + translateStateToText(MemoryManager.loadIsSoundOn()));
                 myGdxGame.audioManager.updateSoundFlag();
             }
         }
@@ -134,6 +134,6 @@ public class SettingsScreen extends ScreenAdapter {
 
 
     private String translateStateToText(boolean state) {
-        return state ? "ON" : "OFF";
+        return state ? "Включено" : "Выключено";
     }
 }

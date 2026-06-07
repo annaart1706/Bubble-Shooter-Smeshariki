@@ -20,10 +20,6 @@ public class LiveView extends View {
         leftLives = 0;
     }
 
-    public void setLeftLives(int leftLives) {
-        this.leftLives = leftLives;
-    }
-
     @Override
     public void draw(SpriteBatch batch) {
         if (leftLives > 0) batch.draw(texture, x + (texture.getWidth() + livePadding), y, width, height);

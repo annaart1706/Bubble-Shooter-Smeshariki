@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import ru.samsung.gamestudio.managers.AudioManager;
 import ru.samsung.gamestudio.screens.GameScreen;
+import ru.samsung.gamestudio.screens.InfoScreen;
 import ru.samsung.gamestudio.screens.MenuScreen;
 import ru.samsung.gamestudio.screens.SettingsScreen;
 
@@ -36,6 +37,7 @@ public class MyGdxGame extends Game {
     public GameScreen gameScreen;
     public MenuScreen menuScreen;
     public SettingsScreen settingsScreen;
+    public InfoScreen infoScreen;
 
     float accumulator = 0;
 
@@ -46,8 +48,8 @@ public class MyGdxGame extends Game {
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
 
-        largeWhiteFont = FontBuilder.generate(48, Color.WHITE, GameResources.FONT_PATH);
-        commonWhiteFont = FontBuilder.generate(24, Color.WHITE, GameResources.FONT_PATH);
+        largeWhiteFont = FontBuilder.generate(36, Color.WHITE, GameResources.FONT_PATH);
+        commonWhiteFont = FontBuilder.generate(18, Color.WHITE, GameResources.FONT_PATH);
         commonBlackFont = FontBuilder.generate(24, Color.BLACK, GameResources.FONT_PATH);
 
         batch = new SpriteBatch();
@@ -58,6 +60,7 @@ public class MyGdxGame extends Game {
         gameScreen = new GameScreen(this);
         menuScreen = new MenuScreen(this);
         settingsScreen = new SettingsScreen(this);
+        infoScreen = new InfoScreen(this);
 
         setScreen(menuScreen);
     }

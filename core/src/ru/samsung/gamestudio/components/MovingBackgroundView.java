@@ -1,6 +1,5 @@
 package ru.samsung.gamestudio.components;
 
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import ru.samsung.gamestudio.GameSettings;
@@ -8,7 +7,6 @@ import ru.samsung.gamestudio.GameSettings;
 public class MovingBackgroundView extends View {
 
     Texture texture;
-
     int texture1Y;
     int texture2Y;
     int speed = 0;
