@@ -15,10 +15,8 @@ public class GameSession {
     long pauseStartTime;
     private int score;
     int destructedSmesharikNumber;
-    // Флаг, который сообщит экрану игры, что нужно запустить анимацию падения
     public boolean isGameOverTriggered = false;
     public int lastRecordIndex = -1;
-
 
     public GameSession() {
     }
@@ -45,7 +43,6 @@ public class GameSession {
     public void endGame() {
         state = GameState.ENDED;
 
-        // Взводим флаг: игра закончена, пора ронять Смешариков!
         isGameOverTriggered = true;
 
         ArrayList<Integer> recordsTable = MemoryManager.loadRecordsTable();
@@ -57,11 +54,10 @@ public class GameSession {
             if (recordsTable.get(foundIdx) < getScore()) break;
         }
 
-        // Запоминаем позицию рекорда (если она в пределах топ-5)
         if (foundIdx < 5) {
-            lastRecordIndex = foundIdx; // Индекс от 0 до 4
+            lastRecordIndex = foundIdx;
         } else {
-            lastRecordIndex = -1; // Не попал в топ
+            lastRecordIndex = -1;
         }
 
         recordsTable.add(foundIdx, getScore());
@@ -80,6 +76,4 @@ public class GameSession {
     public void updateScore() {
 
     }
-
-
 }

@@ -56,22 +56,17 @@ public class SettingsScreen extends ScreenAdapter {
         );
 
     }
-    // =========================================================================
-    // ДОБАВЛЯЕМ МЕТОД show() ДЛЯ ПЕРЕКЛЮЧЕНИЯ МУЗЫКИ И СБРОСА ТЕКСТА 🛡️🎶
-    // =========================================================================
+
     @Override
     public void show() {
-        // 1. Включаем спокойную музыку для экрана настроек (индекс 3)
         if (myGdxGame != null && myGdxGame.audioManager != null) {
-            myGdxGame.audioManager.playMusicForState(3); // Спокойная тема Лосяша
+            myGdxGame.audioManager.playMusicForState(3);
         }
 
-        // 2. Сбрасываем текст очистки рекордов к исходному состоянию при каждом входе
         if (clearSettingView != null) {
             clearSettingView.setText("очистить рекорды");
         }
 
-        // 3. На всякий случай обновляем текст звука и музыки, если они менялись в игре
         if (musicSettingView != null) {
             musicSettingView.setText("музыка: " + translateStateToText(MemoryManager.loadIsMusicOn()));
         }
@@ -79,7 +74,6 @@ public class SettingsScreen extends ScreenAdapter {
             soundSettingView.setText("звуки: " + translateStateToText(MemoryManager.loadIsSoundOn()));
         }
     }
-    // =========================================================================
 
     @Override
     public void render(float delta) {
@@ -108,7 +102,6 @@ public class SettingsScreen extends ScreenAdapter {
 
             if (returnButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
 
-                // ИСПРАВЛЕНИЕ: Возвращаем задорную тему ГЛАВНОГО МЕНЮ (индекс 1) обратно! 🪕✨
                 if (myGdxGame.audioManager != null) {
                     myGdxGame.audioManager.playMusicForState(1);
                 }
@@ -131,7 +124,6 @@ public class SettingsScreen extends ScreenAdapter {
             }
         }
     }
-
 
     private String translateStateToText(boolean state) {
         return state ? "Включено" : "Выключено";

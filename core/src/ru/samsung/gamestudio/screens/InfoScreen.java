@@ -45,27 +45,22 @@ public class InfoScreen extends ScreenAdapter {
         backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH);
         blackoutView = new ImageView(50, 150, 620, 950, GameResources.BLACKOUT_MIDDLE_IMG_PATH);
 
-        // Кнопка возврата в левом нижнем углу плашки
         backButton = new ButtonView(280, 70, 160, 60, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "назад");
 
         iconViews = new ImageView[10];
         descViews = new TextView[10];
 
-        // Автоматически расставляем Смешариков списком сверху вниз
         int startY = 1020;
-        int stepY = 85; // Расстояние между строчками
+        int stepY = 85;
 
         for (int i = 0; i < 10; i++) {
-            // Берем круглые картинки из твоих настроек GameSettings.BUBBLE_TEXTURES
             iconViews[i] = new ImageView(80, startY - (i * stepY), 50, 50, GameSettings.BUBBLE_TEXTURES[i]);
-            // Выводим подсказки твоим новым красивым русским шрифтом commonWhiteFont!
             descViews[i] = new TextView(myGdxGame.commonWhiteFont, 150, startY - (i * stepY) + 35, descriptions[i]);
         }
     }
 
     @Override
     public void show() {
-        // На экране справки пусть играет спокойная тема Лосяша (индекс 3)
         if (myGdxGame != null && myGdxGame.audioManager != null) {
             myGdxGame.audioManager.playMusicForState(3);
         }
@@ -85,7 +80,6 @@ public class InfoScreen extends ScreenAdapter {
         blackoutView.draw(myGdxGame.batch);
         backButton.draw(myGdxGame.batch);
 
-        // Рисуем список сил
         for (int i = 0; i < 10; i++) {
             if (iconViews[i] != null) iconViews[i].draw(myGdxGame.batch);
             if (descViews[i] != null) descViews[i].draw(myGdxGame.batch);
@@ -99,7 +93,6 @@ public class InfoScreen extends ScreenAdapter {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if (backButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                // Возвращаемся в главное меню
                 myGdxGame.setScreen(myGdxGame.menuScreen);
             }
         }
