@@ -34,7 +34,7 @@ public class RecordsListView extends TextView {
             String rowText = (i + 1) + ". - " + recordsList.get(i);
 
             if (i == highlightedIdx) {
-                rowText += "  ★ ТВОЙ РЕЗУЛЬТАТ ★";
+                rowText += "  <<< ТВОЙ РЕЗУЛЬТАТ";
             }
             recordsLines.add(rowText);
         }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import ru.samsung.gamestudio.GameResources;
 import ru.samsung.gamestudio.MyGdxGame;
 import ru.samsung.gamestudio.components.ButtonView;
@@ -71,20 +72,21 @@ public class MenuScreen extends ScreenAdapter {
 
             if (startButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                 myGdxGame.setScreen(myGdxGame.gameScreen);
-                if (settingsButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    myGdxGame.setScreen(myGdxGame.settingsScreen);
-                }
-
-                if (exitButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    if (myGdxGame.audioManager != null) {
-                        myGdxGame.audioManager.stopMusic();
-                    }
-                    Gdx.app.exit();
-                }
-                if (infoButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    myGdxGame.setScreen(myGdxGame.infoScreen);
-                }
             }
+            if (settingsButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                myGdxGame.setScreen(myGdxGame.settingsScreen);
+            }
+
+            if (exitButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                if (myGdxGame.audioManager != null) {
+                    myGdxGame.audioManager.stopMusic();
+                }
+                Gdx.app.exit();
+            }
+            if (infoButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                myGdxGame.setScreen(myGdxGame.infoScreen);
+            }
+
         }
     }
 }

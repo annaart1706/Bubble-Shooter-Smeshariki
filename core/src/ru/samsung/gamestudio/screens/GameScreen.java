@@ -99,9 +99,9 @@ public class GameScreen extends ScreenAdapter {
             );
 
             backgroundView = new MovingBackgroundView(GameResources.BACKGROUND_IMG_PATH);
-            cloudLineView = new ImageView(0, 30, "textures/cloud_border.png");
+            cloudLineView = new ImageView(0, 0, GameSettings.SCREEN_WIDTH, GameSettings.CRITICAL_Y_LINE,"textures/cloud_border.png");
             scoreTextView = new TextView(myGdxGame.commonWhiteFont, 80, 60);
-            pauseButton = new ButtonView(620, 70, 46, 54, GameResources.PAUSE_IMG_PATH); // Пауза справа внизу
+            pauseButton = new ButtonView(620, 70, 46, 54, GameResources.PAUSE_IMG_PATH);
 
             fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
             pauseTextView = new TextView(myGdxGame.largeWhiteFont, 282, 842, "Пауза");
@@ -461,7 +461,7 @@ break;
         }else if (gameSession.state == GameState.ENDED) {
         if (fullBlackoutView != null) fullBlackoutView.draw(myGdxGame.batch);
 
-        String currentScoreText = "ТВОЙ РЕЗУЛЬТАТ: " + gameSession.getScore();
+        String currentScoreText = "<<< ТВОЙ РЕЗУЛЬТАТ: " + gameSession.getScore();
         GlyphLayout scoreLayout = new GlyphLayout(myGdxGame.largeWhiteFont, currentScoreText);
         float scoreX = (GameSettings.SCREEN_WIDTH - scoreLayout.width) / 2;
 
